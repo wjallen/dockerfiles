@@ -1,0 +1,6 @@
+[submodule "cloud-cli/agave-cli"]
+	path = cloud-cli/agave-cli
+	url = https://github.com/TACC-Cloud/agave-cli
+[submodule "cloud-cli/abaco-cli"]
+	path = cloud-cli/abaco-cli
+	url = https://github.com/TACC-Cloud/abaco-cli

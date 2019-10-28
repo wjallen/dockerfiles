@@ -5,8 +5,8 @@ Docker environment for working with agave and abaco CLIs
 Try:
 
 ```
-$ git clone --recurse-submodules https://github.com/wjallen/cloud-cli-docker-env
-$ cd cloud-cli-docker-env
+$ git clone --recurse-submodules https://github.com/wjallen/dockerfiles
+$ cd dockerfiles/cloud-cli
 $ bash docker-build.sh
 $ bash docker-run.sh
 
