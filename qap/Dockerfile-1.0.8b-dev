@@ -1,0 +1,74 @@
+FROM ubuntu:trusty
+
+# install dependencies
+RUN apt-get update && apt-get upgrade
+RUN apt-get install -y wget pkg-config graphviz gsl-bin \
+    libexpat1-dev libgiftiio-dev libglu1-mesa libglu1-mesa-dev \
+    libgsl0-dev libjpeg-progs libxml2 libxml2-dev libxext-dev \
+    libxpm-dev libxp6 libxp-dev mesa-common-dev mesa-utils \
+    netpbm libpng-dev libfreetype6-dev libxml2-dev libxslt1-dev python-dev \
+    build-essential g++ libxft2 \
+    x11-utils libxt-dev libxmu-dev libxft-dev libmotif-dev m4
+
+RUN mkdir -p /usr/lib64 && \
+    ln -s /usr/lib/x86_64-linux-gnu/libXm.a /usr/lib64/libXm.a && \
+    ln -s /usr/lib/x86_64-linux-gnu/libexpat.a /usr/lib64/libexpat.a
+
+# install miniconda
+RUN wget http://repo.continuum.io/miniconda/Miniconda-3.8.3-Linux-x86_64.sh && \
+    bash Miniconda-3.8.3-Linux-x86_64.sh -b -p /usr/local/bin/miniconda && \
+    rm -rf Miniconda-3.8.3-Linux-x86_64.sh && python -v
+
+ENV PATH /usr/local/bin/miniconda/bin:${PATH}
+
+# install python requirements
+RUN conda install -y pip scipy
+RUN pip install nipype nibabel nitime pyyaml pandas seaborn pyPdf2 xhtml2pdf indi-tools
+
+# install old version of afni
+ADD Makefile.afni /
+RUN wget https://afni.nimh.nih.gov/pub/dist/tgz/AFNI_ARCHIVE/AFNI_17.0.15.tgz && \
+    tar xzvf AFNI_17.0.15.tgz && mkdir -p /opt/afni && \
+    mv AFNI_17.0.15/ /opt/afni/bin && \
+    cd /opt/afni/bin && mv /Makefile.afni ./Makefile && \
+    rm -rf /AFNI_17.0.15.tgz
+
+#    cd /opt/afni/bin/ && make
+
+#ENV AFNIPATH /opt/afni/bin/
+#ENV PATH /code:/opt/afni/bin:/usr/local/bin/miniconda/bin:${PATH}
+
+
+#apt-get install libfontconfig1-dev
+
+
+# apt-get clean
+
+
+
+#RUN apt-get update && \
+#    apt-get install -y tcsh xfonts-base python-qt4 ibmotif4 libmotif-dev \
+#    motif-clients xvfb gnome-tweak-tool libjpeg62 xterm gedit evince libxt-dev \
+#    libxmu-headers m4
+
+
+##### GET RID of -V 34 from CCOLD in Makefile.linux_openmp_64
+#RUN wget https://afni.nimh.nih.gov/pub/dist/tgz/AFNI_ARCHIVE/AFNI_17.0.15.tgz && \
+#    tar xzvf AFNI_17.0.15.tgz && mkdir -p /opt/afni && \
+#    mv AFNI_17.0.15/ /opt/afni/bin && \
+#    cd /linux_ubuntu_16_64/ && make --makefile=Makefile.linux_openmp_64
+#    rm -rf AFNI_17.0.15.tgz
+
+#COPY . /tmp/qap
+
+#RUN cd /tmp/qap && \
+#    python setup.py build && python setup.py install
+
+#RUN cd /tmp/qap && \
+#    python setup.py build && python setup.py install && \
+#    pip uninstall -y nipype networkx && \
+#    pip install nipype==0.12.1 networkx==1.11
+
+
+# don't forget ipython!
+#RUN conda install ipython
