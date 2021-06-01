@@ -1,0 +1,99 @@
+FROM centos:7
+
+# update, grab a recent gcc and openblas
+RUN yum -y update \
+    && yum -y groupinstall "Development Tools" \
+    && yum -y install which wget \
+    && yum -y install libpng12 libmng 
+
+
+# Download and install openblas
+RUN curl -LO https://github.com/xianyi/OpenBLAS/archive/v0.3.4.tar.gz \
+    && tar -xvzf v0.3.4.tar.gz \
+    && cd OpenBLAS-0.3.4 \
+    && make -j2 \
+    && make install \
+    && cd ../ \
+    && rm -rf OpenBLAS-0.3.4/ v0.3.4.tar.gz
+
+ENV LD_LIBRARY_PATH=/opt/OpenBLAS/lib:${LD_LIBRARY_PATH}
+
+
+# Download and install fsl
+RUN curl -LO https://fsl.fmrib.ox.ac.uk/fsldownloads/fslinstaller.py \
+    && python fslinstaller.py -d /usr/local/fsl 
+
+
+# Pick a version of CUDA to install
+
+#ARG CUDA_VER=7.5
+#ARG CUDA_RPM=cuda-repo-rhel7-7-5-local-7.5-18.x86_64.rpm
+#ARG CUDA_VER=9.0
+#ARG CUDA_RPM=cuda-repo-rhel7-9-0-local-9.0.176-1.x86_64-rpm
+#ARG CUDA_VER=9.1
+#ARG CUDA_RPM=cuda-repo-rhel7-9-1-local-9.1.85-1.x86_64
+#ARG CUDA_VER=9.2
+#ARG CUDA_RPM=cuda-repo-rhel7-9-2-local-9.2.148-1.x86_64
+#ARG PROD=2
+
+# this one works for 9.2
+#RUN curl -LO https://developer.nvidia.com/compute/cuda/${CUDA_VER}/Prod${PROD}/local_installers/${CUDA_RPM} \
+#    && rpm -i ${CUDA_RPM} \
+#    && yum -y install epel-release \
+#    && yum -y install dkms \
+#    && yum -y install cuda \
+#    && rm -f ${CUDA_RPM} 
+
+
+# Patch for probtrackx_gpu
+#    the CUDA 9.1 version is available in fsl 6.0.1
+#RUN cd /usr/local/fsl/bin \
+#    && wget http://users.fmrib.ox.ac.uk/~moisesf/Probtrackx_GPU/FSL_6/CUDA_9.2/probtrackx2_gpu.zip \
+#    && rm -f probtrackx2_gpu \
+#    && unzip probtrackx2_gpu.zip \
+#    && rm -f probtrackx2_gpu.zip 
+#
+#    && wget http://users.fmrib.ox.ac.uk/~moisesf/Probtrackx_GPU/FSL_6/CUDA_8.0/probtrackx2_gpu.zip \
+#    && unzip probtrackx2_gpu.zip \
+#    && mv probtrackx2_gpu probtrackx2_gpu_8.0 \
+#    && rm -f probtrackx2_gpu.zip \
+#    
+#    && wget http://users.fmrib.ox.ac.uk/~moisesf/Probtrackx_GPU/FSL_6/CUDA_9.1/probtrackx2_gpu.zip \
+#    && unzip probtrackx2_gpu.zip \
+#    && mv probtrackx2_gpu probtrackx2_gpu_9.1 \
+#    && rm -f probtrackx2_gpu.zip \
+#
+
+
+# Patch for bedpostx_gpu
+#RUN cd /tmp \
+#    && wget http://users.fmrib.ox.ac.uk/~moisesf/Bedpostx_GPU/FSL_6/CUDA_9.2/bedpostx_gpu.zip \
+#    && unzip bedpostx_gpu.zip \
+#    && mv -f bin/* /usr/local/fsl/bin/ \
+#    && mv -f lib/* /usr/local/fsl/lib/  
+#
+#    && wget http://users.fmrib.ox.ac.uk/~moisesf/Bedpostx_GPU/FSL_6/CUDA_9.0/bedpostx_gpu.zip \
+#    && unzip bedpostx_gpu.zip \
+#    && mv -f bin/* /usr/local/fsl/bin \
+#    && mv -f lib/* /usr/local/fsl/lib 
+#
+
+
+# Clean up the container a bit
+RUN yum -y clean all \
+    && rm /anaconda-post.log \
+    && rm /fslinstaller.py \
+    && rm -rf /tmp/* \
+    && rm -rf /var/cache/yum
+
+
+ENV LD_LIBRARY_PATH=/usr/local/cuda-${CUDA_VER}/targets/x86_64-linux/lib:${LD_LIBRARY_PATH}
+
+ENV FSLDIR /usr/local/fsl
+ENV PATH=${FSLDIR}/bin:${PATH}
+ENV FSLMULTIFILEQUIT TRUE
+#ENV FSLGECUDAQ cuda.q
+ENV FSLTCLSH /usr/local/fsl/bin/fsltclsh 
+ENV FSLWISH /usr/local/fsl/bin/fslwish
+ENV FSLOUTPUTTYPE=NIFTI_GZ
+
