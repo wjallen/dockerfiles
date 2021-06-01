@@ -78,6 +78,7 @@ RUN curl -LO https://fsl.fmrib.ox.ac.uk/fsldownloads/fslinstaller.py \
 #    && mv -f lib/* /usr/local/fsl/lib 
 #
 
+RUN yum -y install libX11
 
 # Clean up the container a bit
 RUN yum -y clean all \
@@ -87,7 +88,9 @@ RUN yum -y clean all \
     && rm -rf /var/cache/yum
 
 
-ENV LD_LIBRARY_PATH=/usr/local/cuda-${CUDA_VER}/targets/x86_64-linux/lib:${LD_LIBRARY_PATH}
+
+#ENV LD_LIBRARY_PATH=/usr/local/cuda-${CUDA_VER}/targets/x86_64-linux/lib:${LD_LIBRARY_PATH}
+
 
 ENV FSLDIR /usr/local/fsl
 ENV PATH=${FSLDIR}/bin:${PATH}
