@@ -3,7 +3,6 @@ FROM ppc64le/ubuntu:18.04
 ARG R_VERSION=4.1.0
 ARG RSTUDIO_VERSION=1.4.1717
 ENV LC_ALL="C.UTF-8"
-ENV DEBIAN_FRONTEND="noninteractive"
 
 # dependencies
 RUN apt-get update \
@@ -45,7 +44,7 @@ RUN wget https://github.com/rstudio/rstudio/archive/refs/tags/v${RSTUDIO_VERSION
     && sed -i 's/amd64/ppc64el/g' install-dependencies-bionic \
     && echo "exit 0" > /rstudio-${RSTUDIO_VERSION}/dependencies/common/install-crashpad \
     && echo "exit 0" > /rstudio-${RSTUDIO_VERSION}/dependencies/common/install-sentry-cli \
-    && ./install-dependencies-bionic \
+    && DEBIAN_FRONTEND="noninteractive" ./install-dependencies-bionic \
     && apt-get clean
 
 # install Rstudio
@@ -60,7 +59,7 @@ RUN mkdir -p /rstudio-${RSTUDIO_VERSION}/build/ \
     && rm -rf /rstudio-${RSTUDIO_VERSION} 
 
 # set up Rstudio
-RUN cp /usr/local/extra/init.d/debian/rstudio-server /etc/init.d/ \
+RUN cp /usr/local/extras/init.d/debian/rstudio-server /etc/init.d/ \
     && useradd -r rstudio-server \
     && cp /usr/local/extras/init.d/debian/rstudio-server /etc/init.d/ \
     && update-rc.d rstudio-server defaults \
