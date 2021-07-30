@@ -2,7 +2,9 @@ FROM ppc64le/ubuntu:18.04
 
 ARG R_VERSION=4.1.0
 ARG RSTUDIO_VERSION=1.4.1717
-ENV LC_ALL="C.UTF-8"
+ENV LC_ALL="en_US.UTF-8"
+ENV LANG="en_US.UTF-8"
+ENV LANGUAGE="en_US.UTF-8"
 
 # dependencies
 RUN apt-get update \
@@ -17,6 +19,7 @@ RUN apt-get update \
                  liblzma-dev \
                  libpcre2-dev \
                  libreadline-dev \
+                 locales \
                  lsb-release \
                  wget \
                  xorg-dev \
@@ -24,6 +27,7 @@ RUN apt-get update \
     && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
     && apt-get update \
     && apt-get install -y yarn \
+    && locale-gen en_US.UTF-8 \
     && apt-get clean
 
 # install R
@@ -56,26 +60,19 @@ RUN mkdir -p /rstudio-${RSTUDIO_VERSION}/build/ \
              ../ \
     && make -j4 \
     && make install \
-    && rm -rf /rstudio-${RSTUDIO_VERSION} 
+    && rm -rf /rstudio-${RSTUDIO_VERSION} /v${RSTUDIO_VERSION}.tar.gz
 
 # set up Rstudio
+ADD ./pam-helper /usr/local/bin/
 RUN cp /usr/local/extras/init.d/debian/rstudio-server /etc/init.d/ \
     && useradd -r rstudio-server \
-    && cp /usr/local/extras/init.d/debian/rstudio-server /etc/init.d/ \
     && update-rc.d rstudio-server defaults \
     && ln -f -s /usr/local/bin/rstudio-server /usr/sbin/rstudio-server \
-    && mkdir -p /var/run/rstudio-server \
-    && mkdir -p /var/lock/rstudio-server \
-    && mkdir -p /var/log/rstudio-server \
-    && mkdir -p /var/lib/rstudio-server \
-    && set -e \
     && useradd -m -d /home/rstudio -G sudo rstudio \
     && echo rstudio:rstudio | chpasswd \
-    && rstudio-server online \
-    && cd / \
-    && echo -e '#!/bin/bash\ncd /usr/sbin\nrstudio-server start' >> startup.sh \
-    && chmod +x startup.sh
+    && echo "/usr/sbin/rstudio-server start" >> /startup.sh \
+    && chmod +x /startup.sh \
+    && chmod 755 /usr/local/bin/pam-helper
 
-EXPOSE 8787
-VOLUME /home/rstudio
-CMD /startup.sh ; sleep infinity
+CMD /bin/bash /startup.sh; sleep infinity
+
