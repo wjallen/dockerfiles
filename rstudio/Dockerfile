@@ -61,6 +61,7 @@ RUN wget https://github.com/rstudio/rstudio/archive/refs/tags/v${RSTUDIO_VERSION
     && echo "exit 0" > /rstudio-${RSTUDIO_VERSION}/dependencies/common/install-crashpad \
     && echo "exit 0" > /rstudio-${RSTUDIO_VERSION}/dependencies/common/install-sentry-cli \
     && DEBIAN_FRONTEND="noninteractive" ./install-dependencies-bionic \
+    && rm -rf /tmp/*/boost_1_69_0.tar.bz2 /tmp/*/boost-build/ \
     && apt-get clean
 
 # install Rstudio
@@ -74,16 +75,24 @@ RUN mkdir -p /rstudio-${RSTUDIO_VERSION}/build/ \
     && rm -rf /rstudio-${RSTUDIO_VERSION} /v${RSTUDIO_VERSION}.tar.gz
 
 # install common R packages
-#RUN R -e "install.packages(c('devtools', 'tidyverse'), \
-#                           dependencies=TRUE, \
-#                           repos='http://cran.rstudio.com/')"
-# consider these:
+RUN apt-get install -y \
+              libgit2-dev \
+              libfribidi-dev \
+              libharfbuzz-dev \
+    && R -e "install.packages(c('devtools', \
+                                'tidyverse', \
+                                'gtools', \
+                                'gdata', \
+                                'foreach'), \
+                              dependencies=TRUE, \
+                              repos='http://cran.rstudio.com/')" \
+    && apt-get clean
+
 #
-# apsrtable BH biganalytics bigmemory bigmemory.sri bigtabulate bit car caret cluster
-# coda data.table devtools doMC doParallel ff foreach forecast foreign gdata
-# ggplot2 gtools Hmisc igraph inline iterators labeling lattice lmtest lubridate
-# mchof multicore munsell mvtnorm nlme plm proto qcc R2jags randomForest RColorBrewer
-# Rcpp Rdsm reshape2 rgl scales slam sp SparseM sqldf stringr synchronicity tidyverse zoo
+# consider these other R packages?
+#
+# apsrtable BH biganalytics bigmemory bigmemory.sri bigtabulate caret coda ff inline lmtest 
+# mchof multicore mvtnorm plm proto qcc R2jags Rdsm rgl slam sqldf synchronicity
 #
 
 # set up Rstudio

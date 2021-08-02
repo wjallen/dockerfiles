@@ -16,7 +16,7 @@ clean:
 
 superclean: clean
 	docker rmi wallen/rstudio:1.4.1717
-	singularity cache clean -y
+	singularity cache clean
 
 cycle: clean build push pull
 
