@@ -1,9 +1,8 @@
 FROM ubuntu:18.04
 
 ARG R_VERSION=4.1.0
-#ARG RSTUDIO_VERSION=1.4.1717
-ARG RSTUDIO_VERSION=2021.09.1+372
-ARG RSTUDIO_VERSION_ALT=2021.09.1-372
+ARG RSTUDIO_VERSION=1.4.1717
+#ARG RSTUDIO_VERSION=2021.09.1+372
 
 # dependencies
 RUN apt-get update \
@@ -57,23 +56,23 @@ RUN wget https://cran.r-project.org/src/base/R-4/R-${R_VERSION}.tar.gz \
 # dependencies for Rstudio
 RUN wget https://github.com/rstudio/rstudio/archive/refs/tags/v${RSTUDIO_VERSION}.tar.gz \
     && tar -xvzf v${RSTUDIO_VERSION}.tar.gz \
-    && cd rstudio-${RSTUDIO_VERSION_ALT}/dependencies/linux \
+    && cd rstudio-${RSTUDIO_VERSION}/dependencies/linux \
     && sed -i 's/sudo//g' install-dependencies-bionic \
-    && echo "exit 0" > /rstudio-${RSTUDIO_VERSION_ALT}/dependencies/common/install-crashpad \
-    && echo "exit 0" > /rstudio-${RSTUDIO_VERSION_ALT}/dependencies/common/install-sentry-cli \
+    && echo "exit 0" > /rstudio-${RSTUDIO_VERSION}/dependencies/common/install-crashpad \
+    && echo "exit 0" > /rstudio-${RSTUDIO_VERSION}/dependencies/common/install-sentry-cli \
     && DEBIAN_FRONTEND="noninteractive" ./install-dependencies-bionic \
     && rm -rf /tmp/*/boost_1_69_0.tar.bz2 /tmp/*/boost-build/ \
     && apt-get clean
 
 # install Rstudio
-RUN mkdir -p /rstudio-${RSTUDIO_VERSION_ALT}/build/ \
-    && cd /rstudio-${RSTUDIO_VERSION_ALT}/build/ \
+RUN mkdir -p /rstudio-${RSTUDIO_VERSION}/build/ \
+    && cd /rstudio-${RSTUDIO_VERSION}/build/ \
     && cmake -DRSTUDIO_TARGET=Server \
              -DCMAKE_BUILD_TYPE=Release \
              ../ \
     && make -j4 \
     && make install \
-    && rm -rf /rstudio-${RSTUDIO_VERSION_ALT} /v${RSTUDIO_VERSION}.tar.gz
+    && rm -rf /rstudio-${RSTUDIO_VERSION} /v${RSTUDIO_VERSION}.tar.gz
 
 # install common R packages
 RUN apt-get install -y \
