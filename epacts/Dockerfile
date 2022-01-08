@@ -32,6 +32,9 @@ RUN cmake -DCMAKE_TOOLCHAIN_FILE=../cget/cget/cget.cmake -DCMAKE_BUILD_TYPE=Rele
     && make install \
     && rm -rf ${SRC_DIR}
 
-WORKDIR /
-ENTRYPOINT [ "epacts" ]
-CMD [ "help" ]
+RUN apt-get install -y language-pack-en
+
+ENV LC_CTYPE=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8  
+ENV LANGUAGE=en_US.UTF-8
+ENV LANG=en_US.UTF-8    
