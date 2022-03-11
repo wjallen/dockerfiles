@@ -22,12 +22,17 @@ ADD setup_custom.sh /MitoSAlt_1.1.1/setup_custom.sh
 RUN HUMAN=yes ./setup_custom.sh && \
     THREADS=1 HINDEX=yes ./setup_custom.sh
 
-    
 #RUN MOUSE=yes ./setup_custom.sh && \
 #    THREADS=1 MINDEX=yes ./setup_custom.sh
 
+RUN mv /MitoSAlt_1.1.1/config_human.txt /MitoSAlt_1.1.1/bak-config_human.txt && \
+    mv /MitoSAlt_1.1.1/config_mouse.txt /MitoSAlt_1.1.1/bak-config_mouse.txt
+
+ADD setup_dirs.sh /MitoSAlt_1.1.1/setup_dirs.sh
+RUN chmod go=u /MitoSAlt_1.1.1/setup_dirs.sh
 
 RUN yum clean all && \
     rm /MitoSAlt_1.1.1.zip && \
     rm /anaconda-post.log  && \
     rm /MitoSAlt_1.1.1/setup.log
+
