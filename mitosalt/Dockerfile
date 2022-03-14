@@ -25,14 +25,21 @@ RUN HUMAN=yes ./setup_custom.sh && \
 #RUN MOUSE=yes ./setup_custom.sh && \
 #    THREADS=1 MINDEX=yes ./setup_custom.sh
 
+RUN R -e "install.packages(c('BiocManager'), dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
+    R -e "BiocManager::install(c('Biostrings'))" && \
+    R -e "install.packages(c('RColorBrewer', 'plotrix'), dependencies=TRUE, repos='http://cran.rstudio.com/')" 
+
 RUN mv /MitoSAlt_1.1.1/config_human.txt /MitoSAlt_1.1.1/bak-config_human.txt && \
     mv /MitoSAlt_1.1.1/config_mouse.txt /MitoSAlt_1.1.1/bak-config_mouse.txt
 
 ADD setup_dirs.sh /MitoSAlt_1.1.1/setup_dirs.sh
 RUN chmod go=u /MitoSAlt_1.1.1/setup_dirs.sh
 
+RUN sed -i 's/delplot.R/\/MitoSAlt_1.1.1\/delplot.R/' MitoSAlt1.1.1.pl
+
 RUN yum clean all && \
     rm /MitoSAlt_1.1.1.zip && \
     rm /anaconda-post.log  && \
     rm /MitoSAlt_1.1.1/setup.log
+
 
