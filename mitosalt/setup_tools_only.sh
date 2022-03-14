@@ -256,18 +256,18 @@ if [ "$MINDEX" == "yes" ]; then
 fi
 
 #INSTALL PLOTRIX
-echo -e "\x1b[97;41m $now:Install R packages: \x1b[m"
-if [ "$PLOTRIX" == "yes" ]; then
-  wget $PLOTRIX_URL
-  R CMD INSTALL -l bin $PLOTRIX_V
-  rm $PLOTRIX_V
-fi
+#echo -e "\x1b[97;41m $now:Install R packages: \x1b[m"
+#if [ "$PLOTRIX" == "yes" ]; then
+#  wget $PLOTRIX_URL
+#  R CMD INSTALL -l bin $PLOTRIX_V
+#  rm $PLOTRIX_V
+#fi
 
 #INSTALL RCOLORBREWER
-if [ "$RCB" == "yes" ]; then
-  wget $RCB_URL
-  R CMD INSTALL -l bin $RCB_V
-  rm $RCB_V
-fi
+#if [ "$RCB" == "yes" ]; then
+#  wget $RCB_URL
+#  R CMD INSTALL -l bin $RCB_V
+#  rm $RCB_V
+#fi
 
 echo -e "\n\n\x1b[30;43m $now: Setup finished!\x1b[m"
