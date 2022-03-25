@@ -1,0 +1,1 @@
+Default redis:6 image only supports 16(?) dbs per server. This redis.conf file increases it to 40
