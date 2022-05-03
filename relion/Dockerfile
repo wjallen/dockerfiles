@@ -12,13 +12,15 @@ RUN add-apt-repository ppa:graphics-drivers/ppa && \
     apt-get -o Dpkg::Options::="--force-overwrite" install -y cuda-11-4 cuda-drivers
 
 
+RUN apt-get install -y libxft-dev  freetype2-demos
+
 RUN mkdir /app && \
     cd /app && \
     git clone https://github.com/3dem/relion.git && \
     cd relion && \
     mkdir build && \
     cd build && \
-    cmake -DCMAKE_INSTALL_PREFIX=/app/relion-3.1.3 -DGUI=OFF .. && \
+    cmake -DCMAKE_INSTALL_PREFIX=/app/relion-3.1.3 .. && \
     make -j2 && \
     make install
 
