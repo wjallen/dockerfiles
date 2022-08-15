@@ -1,0 +1,62 @@
+FROM tacc/tacc-ubuntu18-mvapich2.3-ib
+
+#
+# Dependencies
+# 
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y \
+        build-essential \
+        cmake \
+        freeglut3-dev \
+        freetype2-demos \
+        ghostscript \
+        git \
+        libfftw3-dev \
+        libglu1-mesa-dev \
+        libpng-dev \
+        libtiff-dev \
+        libx11-dev \
+        libxft-dev \
+        libxi-dev \
+        libxmu-dev \
+        software-properties-common \
+        wget
+
+# 
+# Not sure if gctf is needed
+# 
+# 
+# RUN curl "https://www2.mrc-lmb.cam.ac.uk/download/gctf_v1-06-and-examples/?ind=1588080936085&filename=Gctf_v1.06_and_examples.tar.gz&wpdmdl=17948&refresh=62f9073fafcf31660487487" -o Gctf_v1.06_and_examples.tar.gz && \ 
+#     tar -xvzf Gctf_v1.06_and_examples.tar.gz && \
+#     rm Gctf_v1.06_and_examples.tar.gz && \
+#     cd Gctf_v1.06 &&    ## precompiled binaries in bin
+
+#
+# Cuda
+# 
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-keyring_1.0-1_all.deb && \
+    dpkg -i cuda-keyring_1.0-1_all.deb && \
+    add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /" && \
+    apt-get update && \
+    apt-get -y install cuda
+
+#
+# Relion
+#
+RUN git clone https://github.com/3dem/relion.git && \
+    cd relion && \
+    git checkout ver4.0 && \
+    git pull && \
+    mkdir build && \
+    cd build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/app/relion \
+          .. && \
+    make -j2 && \
+    make install && \
+    cd / && \
+    rm -rf /relion
+
+ENV PATH=/app/relion/bin:${PATH}
+ENV LD_LIBRARY_PATH=/app/relion/lib:${LD_LIBRARY_PATH}
+
