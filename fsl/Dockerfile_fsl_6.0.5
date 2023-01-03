@@ -29,7 +29,7 @@ RUN cd /tmp \
     && curl -LO https://fsl.fmrib.ox.ac.uk/fsldownloads/fslinstaller.py \
     && python fslinstaller.py -d /usr/local/fsl 
 
-RUN yum -y install libX11
+RUN yum -y install libX11 libXxf86vm mesa-libGL
  
 # Clean up the container a bit
 RUN yum -y clean all \
