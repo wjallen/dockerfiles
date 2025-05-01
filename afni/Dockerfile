@@ -39,6 +39,12 @@ RUN mkdir $R_LIBS && \
     rPkgsInstall -pkgs ALL
 
 
+RUN R -e "install.packages(c('nlme', \
+                             'lme4', \
+                             'phia'), \
+                             dependencies=TRUE, \
+                             repos='http://cran.rstudio.com/')" \
+
 # afni_system_check.py -check_all 
 # ...
 # please run: cp /root/abin/AFNI.afnirc ~/.afnirc
