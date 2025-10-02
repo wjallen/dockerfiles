@@ -1,0 +1,50 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && \
+    apt-get upgrade -y
+
+RUN DEBIAN_FRONTEND=noninteractive TZ=America/Chicago apt-get install -y tzdata
+
+RUN apt-get install -y build-essential \
+                       bzip2 \
+                       gfortran \
+                       libbz2-dev \
+                       libcurl4-openssl-dev \
+                       libfontconfig1-dev \
+                       libfreetype6-dev \
+                       libfribidi-dev \
+                       libharfbuzz-dev \
+                       libjpeg-dev \
+                       liblzma-dev \
+                       libpcre2-dev \
+                       libpng-dev \
+                       libssl-dev \
+                       libtiff5-dev \
+                       libudunits2-dev \
+                       libxml2-dev \
+                       wget \
+                       zlib1g-dev
+
+
+
+RUN wget https://cran.r-project.org/src/base/R-4/R-4.0.3.tar.gz && \
+    tar -xzf R-4.0.3.tar.gz && \
+    rm R-4.0.3.tar.gz && \
+    cd R-4.0.3 && \
+    ./configure --with-readline=no --with-x=no  --enable-R-shlib --enable-BLAS-shlib --with-pcre2=yes && \
+    make -j2 && \
+    make install
+
+
+# apt-get install cmake
+# 
+# R -e "install.packages('https://cran.r-project.org/src/contrib/Archive/Matrix/Matrix_1.6-0.tar.gz', repos=NULL, type='source')"
+# R -e "install.packages(c('dichromat', 'plyr', 'labeling', 'viridisLite'), repos='http://cran.r-project.org/', dependencies=TRUE)"
+# R -i "install.packages('farver', repos='http://cran.r-project.org/', dependencies=TRUE)"
+# R -e "install.packages('https://cran.r-project.org/src/contrib/Archive/scales/scales_1.2.1.tar.gz', repos=NULL, type='source')"
+# 
+# 
+# 
+# 
+# R -e "install.packages('ggplot2', repos='http://cran.r-project.org/', dependencies=TRUE)"
+# R -e "install.packages('Formula', repos='http://cran.r-project.org/', dependencies=TRUE)"
